@@ -1,0 +1,17 @@
+{
+  "customer": {
+    "name": "TEST",
+    "email": "test@gmail.com",
+    "shippingAddress": "Test\\nHyderabad, TELANGANA, 500089",
+    "billingAddress": "Test\\nHyderabad, TELANGANA, 500089"
+  },
+  "items": [
+    {
+      "item": "WASTE AND SCRAP OF STAINLESS\\nSTEEL",
+      "price": 95,
+      "quantity": 6790,
+      "total_amount": 761159
+    }
+  ],
+  "total_payable_amount": 768771
+}

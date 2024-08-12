@@ -15,12 +15,11 @@ const upload = multer({
 
 app.use(express.json());
 
-
-app.get('/', (req, res) => {
-    res.send('Server running');
+app.get('/ping', (req, res) => {
+    res.json({ message: 'Server is working properly!' });
 });
 
-app.post('/', upload.single('invoice'), async (req, res) => {
+app.post('/upload', upload.single('invoice'), async (req, res) => {
     let pdfText;
     try {
         const dataBuffer = req?.file?.buffer;
@@ -37,7 +36,6 @@ app.post('/', upload.single('invoice'), async (req, res) => {
         res.status(500).send(err.message);
     }
 });
-
 
 
 app.use(express.static(path.join(__dirname, 'public')));

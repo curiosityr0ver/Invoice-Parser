@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Invoice Parser</title>
+    </head>
+
+    <body>
+        <h1>Upload Invoice PDF</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="invoice" name="invoice" accept="application/pdf" required>
+            <button type="submit">Upload</button>
+        </form>
+
+        <script>
+            document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+                e.preventDefault(); // Prevent the default form submission behavior
+
+                const formData = new FormData();
+                const fileInput = document.getElementById('invoice');
+                formData.append('invoice', fileInput.files[0]); // Append the selected file
+
+                try {
+                    // Make the POST request to the server
+                    const response = await fetch('/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        // If the server responds with an error status code, log the error
+                        const errorText = await response.text();
+                        console.error('Server error:', errorText);
+                        return;
+                    }
+
+                    // Check if the response is JSON
+                    const contentType = response.headers.get('Content-Type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const result = await response.json(); // Parse JSON response
+                        console.log('Parsed response:', result); // Log the parsed response
+                    } else {
+                        const text = await response.text(); // Fallback for non-JSON responses
+                        console.log('Unexpected response format:', text);
+                    }
+                } catch (error) {
+                    // Log any errors that occur during the fetch operation
+                    console.error('Error uploading file:', error);
+                }
+            });
+        </script>
+    </body>
+
+</html>
