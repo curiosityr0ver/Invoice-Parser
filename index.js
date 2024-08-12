@@ -1,15 +1,17 @@
 const express = require("express");
 require('dotenv').config();
 const path = require("path");
+const cors = require("cors");
 const pdfParse = require('pdf-parse');
 const { generateContent: generateLlamaContent } = require('./utils/llama_model');
 const { generateContent: generateGeminiContent } = require('./utils/gemini_model');
 const { generateContent: generateOpenAIContent } = require('./utils/open_ai_model');
 const sampleInvoiceJSON = require('./data/invoice.json');
 const multer = require('multer');
+const PORT = process.env.PORT || 3000;
 
 const app = express();
-const port = process.env.PORT || 3000;
+app.use(cors());
 const upload = multer({
     storage: multer.memoryStorage()
 });
@@ -22,10 +24,9 @@ app.get('/ping', (req, res) => {
 
 app.post('/upload', upload.single('invoice'), async (req, res) => {
 
-    setTimeout(() => {
-        return res.json(sampleInvoiceJSON);
-    }, 3000);
-
+    // return setTimeout(() => {
+    //     res.json(sampleInvoiceJSON);
+    // }, 1000);
     let pdfText;
     try {
         const dataBuffer = req?.file?.buffer;
@@ -34,8 +35,15 @@ app.post('/upload', upload.single('invoice'), async (req, res) => {
             pdfText = pdfData.text;
             // return res.json({ text: pdfText });
             const rawResponse = await generateGeminiContent(pdfText);
-            const response = await generateLlamaContent(rawResponse);
-            res.json(response);
+            if (rawResponse) {
+                const response = await generateLlamaContent(rawResponse);
+                response.model = 'parsed by Gemini, processed by Llama';
+                res.json(response);
+            } else {
+                const response = await generateLlamaContent(pdfText);
+                response.model = 'parsed and processed by Llama';
+                res.json(response);
+            }
         }
     } catch (err) {
         console.log(err);
@@ -44,13 +52,13 @@ app.post('/upload', upload.single('invoice'), async (req, res) => {
 });
 
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'public', 'index.html'));
+// });
 
 
-app.listen(port, () => {
+app.listen(PORT, () => {
     console.clear();
-    console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${PORT}`);
 });
