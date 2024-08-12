@@ -5,6 +5,7 @@ const pdfParse = require('pdf-parse');
 const { generateContent: generateLlamaContent } = require('./utils/llama_model');
 const { generateContent: generateGeminiContent } = require('./utils/gemini_model');
 const { generateContent: generateOpenAIContent } = require('./utils/open_ai_model');
+const sampleInvoiceJSON = require('./data/invoice.json');
 const multer = require('multer');
 
 const app = express();
@@ -16,10 +17,15 @@ const upload = multer({
 app.use(express.json());
 
 app.get('/ping', (req, res) => {
-    res.json({ message: 'Server is working properly!' });
+    res.json(sampleInvoiceJSON);
 });
 
 app.post('/upload', upload.single('invoice'), async (req, res) => {
+
+    setTimeout(() => {
+        return res.json(sampleInvoiceJSON);
+    }, 3000);
+
     let pdfText;
     try {
         const dataBuffer = req?.file?.buffer;
