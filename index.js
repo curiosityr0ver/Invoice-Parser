@@ -27,12 +27,12 @@ app.post('/upload', upload.single('invoice'), async (req, res) => {
     // return setTimeout(() => {
     //     res.json(sampleInvoiceJSON);
     // }, 1000);
-    let pdfText;
+
     try {
         const dataBuffer = req?.file?.buffer;
         if (dataBuffer) {
             const pdfData = await pdfParse(dataBuffer);
-            pdfText = pdfData.text;
+            let pdfText = pdfData.text;
             // return res.json({ text: pdfText });
             const rawResponse = await generateGeminiContent(pdfText);
             if (rawResponse) {

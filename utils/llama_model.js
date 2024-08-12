@@ -28,7 +28,7 @@ const generateContent = async (invoice) => {
             messages: [
                 {
                     role: "system",
-                    content: "The following is an invoice. Only answer in JSON."
+                    content: "The following is an invoice, remove any escape sequences. Only answer in JSON."
                 },
                 {
                     role: "user",
